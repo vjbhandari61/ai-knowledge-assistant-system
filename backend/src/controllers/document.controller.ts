@@ -3,7 +3,7 @@ import * as DocumentService from "../services/document.service";
 
 export async function uploadDocument(req: Request, res: Response) {
     try {
-        if(!req.file) {
+        if (!req.file) {
             res.status(400).json({
                 error: "PDF file is required",
             });
@@ -12,7 +12,7 @@ export async function uploadDocument(req: Request, res: Response) {
 
         const userId = Number(req.body.userId);
 
-        if(!Number.isInteger(userId) || userId <= 0) {
+        if (!Number.isInteger(userId) || userId <= 0) {
             res.status(400).json({
                 error: "Valid userId is required"
             });
@@ -34,7 +34,7 @@ export async function uploadDocument(req: Request, res: Response) {
         });
 
     } catch (error) {
-        if(error instanceof Error && error.message === "USER_NOT_FOUND") {
+        if (error instanceof Error && error.message === "USER_NOT_FOUND") {
             res.status(404).json({
                 error: "User not found"
             });
@@ -42,6 +42,56 @@ export async function uploadDocument(req: Request, res: Response) {
         }
 
         console.error(error);
-        res.status(500).json({error: "Failed to upload document"});
+        res.status(500).json({ error: "Failed to upload document" });
+    }
+}
+
+export async function getDocument(req: Request, res: Response) {
+    try {
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            res.status(400).json({ error: "Invalid document ID" });
+            return;
+        }
+
+        const document = await DocumentService.getDocument(id);
+
+        res.status(200).json(document);
+    } catch (error) {
+        if (error instanceof Error && error.message === "DOCUMENT_NOT_FOUND") {
+            res.status(404).json({
+                error: "Document not found"
+            });
+            return;
+        }
+
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export async function getUserDocuments(req: Request, res: Response) {
+    try {
+        const userId = Number(req.params.userId);
+
+        if (!Number.isInteger(userId) || userId <= 0) {
+            res.status(400).json({ error: "Invalid user ID" });
+            return;
+        }
+
+        const documents = await DocumentService.getUserDocuments(userId);
+
+        res.status(200).json(documents);
+    } catch (error) {
+        if (error instanceof Error && error.message === "USER_NOT_FOUND") {
+            res.status(404).json({
+                error: "User not found"
+            });
+            return;
+        }
+
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }

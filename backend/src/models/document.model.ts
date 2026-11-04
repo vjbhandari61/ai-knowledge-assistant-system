@@ -33,3 +33,11 @@ export async function updateDocumentStatus(
         status
     });
 }
+
+export async function findDocumentById(id: number) {
+    return await db.orm.public.Document.where({ id }).first();
+}
+
+export async function findDocumentsByUserId(userId: number) {
+    return await db.orm.public.Document.where({ userId }).all();
+}

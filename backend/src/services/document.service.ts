@@ -35,9 +35,29 @@ export async function registerDocument(data: UploadDocumentInput) {
             totalPages: extracted.totalPages,
             status: "COMPLETED"
         };
-        
+
     } catch (error) {
         await DocumentModel.updateDocumentStatus(document.id, "FAILED");
         throw error;
     }
 };
+
+export async function getDocument(id: number) {
+    const document = await DocumentModel.findDocumentById(id);
+
+    if(!document) {
+        throw new Error("DOCUMENT_NOT_FOUND");
+    }
+
+    return document;
+}
+
+export async function getUserDocuments(userId: number) {
+    const user = await UserModel.findUserById(userId);
+
+    if(!user) {
+        throw new Error("USER_NOT_FOUND");
+    }
+
+    return await DocumentModel.findDocumentsByUserId(userId);
+}
