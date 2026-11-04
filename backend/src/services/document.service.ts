@@ -1,5 +1,6 @@
 import * as DocumentModel from "../models/document.model";
 import * as UserModel from "../models/user.model";
+import { extractPdfText } from "./pdf-extraction.service";
 
 interface UploadDocumentInput {
     userId: number;
@@ -17,7 +18,26 @@ export async function registerDocument(data: UploadDocumentInput) {
         throw new Error("USER_NOT_FOUND");
     }
 
-    return await DocumentModel.createDocument({
-        ...data
-    });
+    const document = await DocumentModel.createDocument(data);
+
+    try {
+        const extracted = await extractPdfText(data.storagePath);
+
+        await DocumentModel.updateDocumentExtraction(
+            document.id,
+            extracted.text,
+            extracted.totalPages
+        );
+
+        return {
+            ...document,
+            extractedText: extracted.text,
+            totalPages: extracted.totalPages,
+            status: "COMPLETED"
+        };
+        
+    } catch (error) {
+        await DocumentModel.updateDocumentStatus(document.id, "FAILED");
+        throw error;
+    }
 };

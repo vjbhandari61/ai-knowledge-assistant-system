@@ -29,6 +29,13 @@
                   }
                 }
               },
+              "extractedText": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "fileName": {
                 "nullable": false,
                 "type": {
@@ -78,6 +85,13 @@
                   "kind": "scalar"
                 }
               },
+              "totalPages": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
               "updatedAt": {
                 "nullable": false,
                 "type": {
@@ -119,6 +133,9 @@
                 "createdAt": {
                   "column": "createdAt"
                 },
+                "extractedText": {
+                  "column": "extractedText"
+                },
                 "fileName": {
                   "column": "fileName"
                 },
@@ -139,6 +156,9 @@
                 },
                 "title": {
                   "column": "title"
+                },
+                "totalPages": {
+                  "column": "totalPages"
                 },
                 "updatedAt": {
                   "column": "updatedAt"
@@ -257,6 +277,11 @@
                     "precision": 3
                   }
                 },
+                "extractedText": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "fileName": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -299,6 +324,11 @@
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "totalPages": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": true
                 },
                 "updatedAt": {
                   "codecId": "pg/timestamptz-date@1",
@@ -415,7 +445,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "60ba7e92a0d1ccd602419259b21bdd402d5d8fb1177223c44abcf978ea47c37a"
+    "storageHash": "e9eb961d04b62685f6aeaebd043849d72d7b116f9d25714c4119619396e8f6da"
   },
   "execution": {
     "executionHash": "aca7fb577721144e7d2da630aad00a58c27f499b183120fce12b11aa295c1241",

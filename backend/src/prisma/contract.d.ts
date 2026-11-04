@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'60ba7e92a0d1ccd602419259b21bdd402d5d8fb1177223c44abcf978ea47c37a'>;
+  StorageHashBase<'e9eb961d04b62685f6aeaebd043849d72d7b116f9d25714c4119619396e8f6da'>;
 export type ExecutionHash =
   ExecutionHashBase<'aca7fb577721144e7d2da630aad00a58c27f499b183120fce12b11aa295c1241'>;
 export type ProfileHash =
@@ -311,6 +311,7 @@ export type StorageColumnInputTypes = ColumnTypesFromStorage<
 export namespace Models {
   export type public_Document = {
     createdAt: FieldOutputTypes['public']['Document']['createdAt'];
+    extractedText: FieldOutputTypes['public']['Document']['extractedText'];
     fileName: FieldOutputTypes['public']['Document']['fileName'];
     fileSize: FieldOutputTypes['public']['Document']['fileSize'];
     id: FieldOutputTypes['public']['Document']['id'];
@@ -318,6 +319,7 @@ export namespace Models {
     status: FieldOutputTypes['public']['Document']['status'];
     storagePath: FieldOutputTypes['public']['Document']['storagePath'];
     title: FieldOutputTypes['public']['Document']['title'];
+    totalPages: FieldOutputTypes['public']['Document']['totalPages'];
     updatedAt: FieldOutputTypes['public']['Document']['updatedAt'];
     userId: FieldOutputTypes['public']['Document']['userId'];
     user: public_User;
@@ -369,6 +371,12 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
+                readonly extractedText: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly fileName: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -417,6 +425,12 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly totalPages: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly updatedAt: {
@@ -531,6 +545,10 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                 };
               };
+              readonly extractedText: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly fileName: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -558,6 +576,10 @@ type ContractBase = Omit<
               readonly title: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly totalPages: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
               };
               readonly updatedAt: {
                 readonly nullable: false;
@@ -588,6 +610,7 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly createdAt: { readonly column: 'createdAt' };
+                readonly extractedText: { readonly column: 'extractedText' };
                 readonly fileName: { readonly column: 'fileName' };
                 readonly fileSize: { readonly column: 'fileSize' };
                 readonly id: { readonly column: 'id' };
@@ -595,6 +618,7 @@ type ContractBase = Omit<
                 readonly status: { readonly column: 'status' };
                 readonly storagePath: { readonly column: 'storagePath' };
                 readonly title: { readonly column: 'title' };
+                readonly totalPages: { readonly column: 'totalPages' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly userId: { readonly column: 'userId' };
               };
