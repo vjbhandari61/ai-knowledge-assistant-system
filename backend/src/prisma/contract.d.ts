@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'73176e0591f24509ce5ccd99dbecf1b65f897f433d0711ce6b6d656dcf030fb9'>;
+  StorageHashBase<'60ba7e92a0d1ccd602419259b21bdd402d5d8fb1177223c44abcf978ea47c37a'>;
 export type ExecutionHash =
   ExecutionHashBase<'aca7fb577721144e7d2da630aad00a58c27f499b183120fce12b11aa295c1241'>;
 export type ProfileHash =
@@ -329,7 +329,6 @@ export namespace Models {
     id: FieldOutputTypes['public']['User']['id'];
     name: FieldOutputTypes['public']['User']['name'];
     updatedAt: FieldOutputTypes['public']['User']['updatedAt'];
-    username: FieldOutputTypes['public']['User']['username'];
     documents: public_Document[];
     readonly [RelationKeys]?: 'documents';
   };
@@ -498,12 +497,6 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                   readonly many: false;
                 };
-                readonly username: {
-                  readonly dataType: 'pg/text';
-                  readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                  readonly many: false;
-                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [{ readonly columns: readonly ['email'] }];
@@ -637,10 +630,6 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly precision: 3 };
                 };
               };
-              readonly username: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
-              };
             };
             readonly relations: {
               readonly documents: {
@@ -664,7 +653,6 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
-                readonly username: { readonly column: 'username' };
               };
             };
           };
