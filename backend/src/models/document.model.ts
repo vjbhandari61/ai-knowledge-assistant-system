@@ -10,7 +10,7 @@ interface CreateDocumentInput {
 }
 
 export async function createDocument(data: CreateDocumentInput) {
-    return await db.orm.public.Document.create(data);
+    return await db.orm.public.Document.select("id", "title", "status").create(data);
 };
 
 export async function updateDocumentExtraction(

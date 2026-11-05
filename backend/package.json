@@ -18,6 +18,7 @@
   "dependencies": {
     "@google/genai": "^2.32.0",
     "@prisma/client": "^7.10.1",
+    "@prisma/orm-extension-pgvector": "^8.0.0-rc.22",
     "@prisma/orm-postgres": "^8.0.0-rc.22",
     "bullmq": "^6.7.0",
     "cors": "^2.8.6",

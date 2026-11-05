@@ -1,5 +1,9 @@
 // use prisma-8
 
+types {
+  Embedding768 = pgvector.Vector(768)
+}
+
 model User {
   id        Int                @id @default(autoincrement())
   email     String             @unique
@@ -40,6 +44,9 @@ model DocumentChunk {
   pageNumber      Int
   content         String
   tokenCount      Int
+
+  embedding       Embedding768?
+
   createdAt       DateTime         @default(now()) @onCreate(now())
   
   @@unique([documentId, chunkIndex])

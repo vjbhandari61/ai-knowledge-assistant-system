@@ -1,7 +1,6 @@
 import * as DocumentModel from "../models/document.model";
 import * as UserModel from "../models/user.model";
-import { extractPdfText } from "./pdf-extraction.service";
-import { chunkPages } from "./chunking.service";
+import { addPDFProcessingJob } from "../queues/pdf-processing.queue";
 
 interface UploadDocumentInput {
     userId: number;
@@ -22,33 +21,17 @@ export async function registerDocument(data: UploadDocumentInput) {
     const document = await DocumentModel.createDocument(data);
 
     try {
-        const extracted = await extractPdfText(data.storagePath);
-
-        console.log("Beginning Chunking Process ====================>")
-        const chunks = await chunkPages(extracted.pages);
-
-        console.table(
-            chunks.map((chunk) => ({
-                index: chunk.chunkIndex,
-                page: chunk.pageNumber,
-                tokens: chunk.tokenCount,
-                characters: chunk.content.length
-            })
-        ));
-
-        console.log("Chunks exceeding limit: ", chunks.filter((chunk) => chunk.tokenCount > 500).length); 
-
-        await DocumentModel.updateDocumentExtraction(
-            document.id,
-            extracted.text,
-            extracted.totalPages
-        );
+        await DocumentModel.updateDocumentStatus(document.id, "QUEUED");
+        
+        const job = await addPDFProcessingJob({
+            documentId: document.id,
+            filePath: data.storagePath
+        });
 
         return {
             ...document,
-            extractedText: extracted.text,
-            totalPages: extracted.totalPages,
-            status: "COMPLETED"
+            jobId: job.id,
+            status: "QUEUED"
         };
 
     } catch (error) {

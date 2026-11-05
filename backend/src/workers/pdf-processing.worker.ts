@@ -3,17 +3,18 @@ import { Worker } from "bullmq";
 import { redisConnection } from "../config/redis";
 import { extractPdfText } from "../services/pdf-extraction.service";
 import { chunkPages } from "../services/chunking.service";
-import { createDocumentChunks } from "../models/document-chunk.model";
-import { updateDocumentStatus } from "../models/document.model";
+import { replaceDocumentChunks } from "../models/document-chunk.model";
+import { updateDocumentExtraction, updateDocumentStatus } from "../models/document.model";
+import { generateEmbedding } from "../services/gemini-token.service";
 
 const worker = new Worker(
     "pdf-processing",
     async (job) => {
-        if(job.name !== "process-pdf") {
+        if (job.name !== "process-pdf") {
             throw new Error(`Unknown job type: ${job.name}`);
         }
 
-        const {documentId, filePath} = job.data;
+        const { documentId, filePath } = job.data;
         console.log(`Processing document: ${documentId}`);
 
         try {
@@ -21,16 +22,24 @@ const worker = new Worker(
 
             const extracted = await extractPdfText(filePath);
 
+            await updateDocumentExtraction(documentId, extracted.text, extracted.totalPages);
+
             await updateDocumentStatus(documentId, "CHUNKING");
 
             const chunks = await chunkPages(extracted.pages);
 
-            const chunksWithDocumentId = chunks.map((chunk) => ({
-                ...chunk,
-                documentId
-            }));
+            const chunksWithEmbeddings = await Promise.all(
+                chunks.map(async (chunk) => ({
+                    ...chunk,
+                    documentId,
+                    embedding: await generateEmbedding(
+                        chunk.content,
+                        "retrieval_document"
+                    )
+                }))
+            );
 
-            await createDocumentChunks(chunksWithDocumentId);
+            await replaceDocumentChunks(documentId, chunksWithEmbeddings);
 
             await updateDocumentStatus(documentId, "COMPLETED");
 

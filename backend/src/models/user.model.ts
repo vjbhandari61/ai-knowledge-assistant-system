@@ -9,7 +9,7 @@ export async function findUserById(id: number) {
 }
 
 export async function createUser(email: string, name?: string) {
-    return await db.orm.public.User.create({
+    return await db.orm.public.User.select("id", "name", "email").create({
         email,
         name: name ?? null
     });

@@ -6,12 +6,17 @@ interface CreateChunkInput {
     pageNumber: number;
     content: string;
     tokenCount: number;
+    embedding: number[];
 }
 
-export async function createDocumentChunks(chunks: CreateChunkInput[]) {
-    if (chunks.length === 0) return [];
+export async function replaceDocumentChunks(documentId: number, chunks: CreateChunkInput[]) {
+    return await db.transaction(async (tx) => {
+        await tx.orm.public.DocumentChunk.where({ documentId }).delete();
 
-    return await db.orm.public.DocumentChunk.createAll(chunks);
+        if (chunks.length === 0) return [];
+
+        return await tx.orm.public.DocumentChunk.select("id", "documentId", "chunkIndex", "pageNumber", "content", "tokenCount", "embedding").createAll(chunks);
+    });
 }
 
 export async function findChunksByDocumentId(documentId: number) {
