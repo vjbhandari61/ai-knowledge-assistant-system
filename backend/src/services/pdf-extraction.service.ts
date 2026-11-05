@@ -7,12 +7,16 @@ export async function extractPdfText(filePath: string) {
 
     try {
         const result = await parser.getText();
-
+        
         return {
             text: result.text,
-            totalPages: result.total
+            totalPages: result.total,
+            pages: result.pages.map((page) => ({
+                pageNumber: page.num,
+                text: page.text
+            }))
         };
-        
+
     } finally {
         await parser.destroy();
     }

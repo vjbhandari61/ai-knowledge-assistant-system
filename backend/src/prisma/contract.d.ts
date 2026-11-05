@@ -23,9 +23,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'e9eb961d04b62685f6aeaebd043849d72d7b116f9d25714c4119619396e8f6da'>;
+  StorageHashBase<'8909b1dab2390b830fdc2b108352e451486acc37cd6295c518da0561a8889d6f'>;
 export type ExecutionHash =
-  ExecutionHashBase<'aca7fb577721144e7d2da630aad00a58c27f499b183120fce12b11aa295c1241'>;
+  ExecutionHashBase<'98cb5b2286a6359da0818e2af8c36d3f5cda65f8459a2e679ea10d77bbabca18'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -322,8 +322,20 @@ export namespace Models {
     totalPages: FieldOutputTypes['public']['Document']['totalPages'];
     updatedAt: FieldOutputTypes['public']['Document']['updatedAt'];
     userId: FieldOutputTypes['public']['Document']['userId'];
+    chunks: public_DocumentChunk[];
     user: public_User;
-    readonly [RelationKeys]?: 'user';
+    readonly [RelationKeys]?: 'chunks' | 'user';
+  };
+  export type public_DocumentChunk = {
+    chunkIndex: FieldOutputTypes['public']['DocumentChunk']['chunkIndex'];
+    content: FieldOutputTypes['public']['DocumentChunk']['content'];
+    createdAt: FieldOutputTypes['public']['DocumentChunk']['createdAt'];
+    documentId: FieldOutputTypes['public']['DocumentChunk']['documentId'];
+    id: FieldOutputTypes['public']['DocumentChunk']['id'];
+    pageNumber: FieldOutputTypes['public']['DocumentChunk']['pageNumber'];
+    tokenCount: FieldOutputTypes['public']['DocumentChunk']['tokenCount'];
+    document: public_Document;
+    readonly [RelationKeys]?: 'document';
   };
   export type public_User = {
     createdAt: FieldOutputTypes['public']['User']['createdAt'];
@@ -339,6 +351,7 @@ export namespace Models {
 export declare const models: {
   public: {
     Document: Models.public_Document;
+    DocumentChunk: Models.public_DocumentChunk;
     User: Models.public_User;
   };
 };
@@ -472,6 +485,82 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly DocumentChunk: {
+              columns: {
+                readonly chunkIndex: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly content: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 3 };
+                  readonly many: false;
+                };
+                readonly documentId: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'function';
+                    readonly expression: 'autoincrement()';
+                  };
+                  readonly many: false;
+                };
+                readonly pageNumber: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly tokenCount: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['documentId', 'chunkIndex'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'DocumentChunk_documentId_idx_825ef746';
+                  readonly prefix: 'DocumentChunk_documentId_idx';
+                  readonly columns: readonly ['documentId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'DocumentChunk';
+                    readonly columns: readonly ['documentId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Document';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly User: {
               columns: {
                 readonly createdAt: {
@@ -529,6 +618,10 @@ type ContractBase = Omit<
   readonly targetFamily: 'sql';
   readonly roots: {
     readonly Document: { readonly namespace: 'public' & NamespaceId; readonly model: 'Document' };
+    readonly DocumentChunk: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'DocumentChunk';
+    };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
   readonly domain: {
@@ -595,6 +688,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly chunks: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'DocumentChunk';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['documentId'];
+                };
+              };
               readonly user: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
                 readonly cardinality: 'N:1';
@@ -621,6 +725,69 @@ type ContractBase = Omit<
                 readonly totalPages: { readonly column: 'totalPages' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly DocumentChunk: {
+            readonly fields: {
+              readonly chunkIndex: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly content: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly typeParams: { readonly precision: 3 };
+                };
+              };
+              readonly documentId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly pageNumber: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly tokenCount: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly document: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Document';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['documentId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'DocumentChunk';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly chunkIndex: { readonly column: 'chunkIndex' };
+                readonly content: { readonly column: 'content' };
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly documentId: { readonly column: 'documentId' };
+                readonly id: { readonly column: 'id' };
+                readonly pageNumber: { readonly column: 'pageNumber' };
+                readonly tokenCount: { readonly column: 'tokenCount' };
               };
             };
           };
@@ -742,6 +909,18 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'Document';
             readonly field: 'updatedAt';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: {
+            readonly id: 'timestampNow';
+            readonly kind: 'generator';
+            readonly params: { readonly precision: 3 };
+          };
+          readonly ref: {
+            readonly entry: 'DocumentChunk';
+            readonly field: 'createdAt';
             readonly namespace: 'public';
           };
         },

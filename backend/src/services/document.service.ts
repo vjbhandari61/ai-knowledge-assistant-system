@@ -1,6 +1,7 @@
 import * as DocumentModel from "../models/document.model";
 import * as UserModel from "../models/user.model";
 import { extractPdfText } from "./pdf-extraction.service";
+import { chunkPages } from "./chunking.service";
 
 interface UploadDocumentInput {
     userId: number;
@@ -22,6 +23,20 @@ export async function registerDocument(data: UploadDocumentInput) {
 
     try {
         const extracted = await extractPdfText(data.storagePath);
+
+        console.log("Beginning Chunking Process ====================>")
+        const chunks = await chunkPages(extracted.pages);
+
+        console.table(
+            chunks.map((chunk) => ({
+                index: chunk.chunkIndex,
+                page: chunk.pageNumber,
+                tokens: chunk.tokenCount,
+                characters: chunk.content.length
+            })
+        ));
+
+        console.log("Chunks exceeding limit: ", chunks.filter((chunk) => chunk.tokenCount > 500).length); 
 
         await DocumentModel.updateDocumentExtraction(
             document.id,

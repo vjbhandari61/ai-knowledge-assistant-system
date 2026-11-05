@@ -24,8 +24,24 @@ model Document {
   extractedText   String?
   totalPages      Int?
 
+  chunks          DocumentChunk[]
+
   createdAt       DateTime           @default(now()) @onCreate(now())
   updatedAt       temporal.UpdatedAt
 
   @@index([userId])
+}
+
+model DocumentChunk {
+  id              Int              @id @default(autoincrement())
+  document        Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId      Int
+  chunkIndex      Int
+  pageNumber      Int
+  content         String
+  tokenCount      Int
+  createdAt       DateTime         @default(now()) @onCreate(now())
+  
+  @@unique([documentId, chunkIndex])
+  @@index([documentId])
 }
