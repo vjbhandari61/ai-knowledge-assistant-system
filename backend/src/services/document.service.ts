@@ -59,3 +59,13 @@ export async function getUserDocuments(userId: number) {
 
     return await DocumentModel.findDocumentsByUserId(userId);
 }
+
+export async function getDocumentForUser(documentId: number, userId: number) {
+    const document = await DocumentModel.findDocumentByIdAndUserId(documentId, userId);
+
+    if(!document) {
+        throw new Error("DOCUMENT_NOT_FOUND");
+    }
+
+    return document;
+}

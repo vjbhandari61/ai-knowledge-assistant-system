@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { registerSchema, loginSchema } from "../validators/auth.validator";
 import { registerUser, authenticateUser } from "../services/auth.service";
+import { generateAccessToken } from "../services/jwt.service";
 
 export async function register(req: Request, res: Response) {
     const validation = registerSchema.safeParse(req.body);
@@ -20,8 +21,11 @@ export async function register(req: Request, res: Response) {
 
         const user = await registerUser(email, password, name);
 
+        const accessToken = generateAccessToken(user.id);
+
         return res.status(201).json({
             message: "Account created successfully",
+            accessToken,
             user
         });
 
@@ -60,11 +64,14 @@ export async function login(req: Request, res: Response) {
 
         const user = await authenticateUser(email, password);
 
+        const accessToken = generateAccessToken(user.id);
+
         return res.status(200).json({
             message: "Login Successful",
+            accessToken,
             user
         });
-        
+
     } catch (error) {
         if (error instanceof Error && error.message === "INVALID_CREDENTIALS") {
             return res.status(401).json({

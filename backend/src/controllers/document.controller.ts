@@ -10,14 +10,7 @@ export async function uploadDocument(req: Request, res: Response) {
             return;
         }
 
-        const userId = Number(req.body.userId);
-
-        if (!Number.isInteger(userId) || userId <= 0) {
-            res.status(400).json({
-                error: "Valid userId is required"
-            });
-            return;
-        }
+        const userId = req.user!.id;
 
         const document = await DocumentService.registerDocument({
             userId,
@@ -55,7 +48,7 @@ export async function getDocument(req: Request, res: Response) {
             return;
         }
 
-        const document = await DocumentService.getDocument(id);
+        const document = await DocumentService.getDocumentForUser(id, req.user!.id);
 
         res.status(200).json(document);
     } catch (error) {
@@ -73,12 +66,7 @@ export async function getDocument(req: Request, res: Response) {
 
 export async function getUserDocuments(req: Request, res: Response) {
     try {
-        const userId = Number(req.params.userId);
-
-        if (!Number.isInteger(userId) || userId <= 0) {
-            res.status(400).json({ error: "Invalid user ID" });
-            return;
-        }
+        const userId = req.user!.id;
 
         const documents = await DocumentService.getUserDocuments(userId);
 

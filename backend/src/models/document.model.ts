@@ -41,3 +41,7 @@ export async function findDocumentById(id: number) {
 export async function findDocumentsByUserId(userId: number) {
     return await db.orm.public.Document.where({ userId }).all();
 }
+
+export async function findDocumentByIdAndUserId(documentId: number, userId: number) {
+    return await db.orm.public.Document.where({id: documentId, userId}).first();
+}

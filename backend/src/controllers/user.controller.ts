@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import * as UserService from "../services/user.service";
+import * as UserModel from "../models/user.model";
 
 export async function getUser(req: Request, res: Response) {
     try {
@@ -24,5 +25,26 @@ export async function getUser(req: Request, res: Response) {
 
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+export async function getCurrentUser(req: Request, res: Response) {
+    try {
+        const user = await UserModel.findUserById(req.user!.id);
+
+        if(!user) {
+            return res.status(404).json({
+                error: "USER_NOT_FOUND"
+            });
+        }
+
+        return res.status(200).json(user);
+
+    } catch (error) {
+        console.error("Get current user error: ", error);
+
+        return res.status(500).json({
+            error: "Internal Server Error"
+        });
     }
 }

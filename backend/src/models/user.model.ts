@@ -5,7 +5,7 @@ export async function findUserByEmail(email: string) {
 }
 
 export async function findUserById(id: number) {
-    return await db.orm.public.User.where({ id }).first();
+    return await db.orm.public.User.where({ id }).select("id", "name", "email", "createdAt").first();
 }
 
 export async function createUser(email: string,  passwordHash: string, name?: string) {

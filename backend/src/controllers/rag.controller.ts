@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { askDocument } from "../services/rag.service";
+import * as DocumentService from "../services/document.service";
 
 export async function askQuestion(
     req: Request,
@@ -21,11 +22,22 @@ export async function askQuestion(
             });
         }
 
+        await DocumentService.getDocumentForUser(
+            documentId,
+            req.user!.id
+        )
+
         const result = await askDocument(documentId, question.trim());
 
         return res.status(200).json(result);
 
     } catch (error) {
+        if(error instanceof Error && error.message === "DOCUMENT_NOT_FOUND") {
+            return res.status(404).json({
+                error: "DOCUMENT_NOT_FOUND"
+            });
+        }
+        
         console.error("RAG Error: ", error);
 
         return res.status(500).json({

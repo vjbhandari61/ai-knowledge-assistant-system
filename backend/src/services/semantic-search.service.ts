@@ -25,10 +25,10 @@ export async function searchDocument(
     ).where(
         (f, fns) => fns.and(
             fns.eq(f.documentId, documentId),
-            fns.gt(
-                fns.cosineSimilarity(f.embedding, queryEmbedding),
-                minSimilarity
-            )
+            // fns.gt(
+                // fns.cosineSimilarity(f.embedding, queryEmbedding),
+                // minSimilarity
+            // )
         )
     ).orderBy(
         (f, fns) => fns.cosineSimilarity(f.embedding, queryEmbedding), { direction: "desc" }

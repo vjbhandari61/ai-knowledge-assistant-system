@@ -30,6 +30,10 @@ if(!process.env.REDIS_HOST || !process.env.REDIS_PORT) {
     throw new Error("REDIS_HOST OR REDIS_PORT is not configured");
 }
 
+if(!process.env.JWT_SECRET|| Buffer.from(process.env.JWT_SECRET, "base64").length < 32) {
+    throw new Error("JWT_SECRET must contain at least 32 random bytes");
+}
+
 export const PORT = Number(process.env.PORT) || 3000;
 export const DATABASE_URL = process.env.DATABASE_URL;
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -39,3 +43,4 @@ export const CHUNK_OVERLAP = Number(process.env.CHUNK_OVERLAP);
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = Number(process.env.REDIS_PORT);
 export const GENERATION_MODEL = process.env.GENERATION_MODEL;
+export const JWT_SECRET = process.env.JWT_SECRET;
