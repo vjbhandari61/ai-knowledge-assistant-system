@@ -14,6 +14,10 @@ if (!process.env.EMBEDDING_MODEL) {
     throw new Error("EMBEDDING_MODEL is not configured");
 }
 
+if (!process.env.GENERATION_MODEL) {
+    throw new Error("GENERATION_MODEL is not configured");
+}
+
 if (!process.env.CHUNK_SIZE) {
     throw new Error("CHUNK_SIZE is not configured");
 }
@@ -34,3 +38,4 @@ export const CHUNK_SIZE = Number(process.env.CHUNK_SIZE);
 export const CHUNK_OVERLAP = Number(process.env.CHUNK_OVERLAP);
 export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = Number(process.env.REDIS_PORT);
+export const GENERATION_MODEL = process.env.GENERATION_MODEL;
