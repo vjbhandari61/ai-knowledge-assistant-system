@@ -5,10 +5,15 @@ types {
 }
 
 model User {
-  id        Int                @id @default(autoincrement())
-  email     String             @unique
-  name      String?
-  documents Document[]
+  id                Int                @id @default(autoincrement())
+  email             String             @unique
+  name              String?
+  passwordHash      String?
+  emailVerifiedAt   DateTime?
+
+  documents         Document[]
+  sessions          Session[]
+
   createdAt DateTime           @default(now()) @onCreate(now())
   updatedAt temporal.UpdatedAt
 }
@@ -51,4 +56,36 @@ model DocumentChunk {
   
   @@unique([documentId, chunkIndex])
   @@index([documentId])
+}
+
+model Session {
+  id              Int       @id @default(autoincrement())  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+
+  refreshToken    RefreshToken[]
+
+  userAgent       String?
+  expiresAt       DateTime
+  revokedAt       DateTime?
+
+  createdAt       DateTime   @default(now()) @onCreate(now()) 
+  updatedAt       temporal.UpdatedAt
+
+  @@index([userId])
+}
+
+model RefreshToken {
+  id              Int        @default(autoincrement())
+  session         Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId       Int
+
+  tokenHash       String     @unique
+  expiresAt       DateTime
+  consumedAt      DateTime?
+  revokedAt       DateTime?
+
+  createdAt       DateTime   @default(now()) @onCreate(now())
+
+  @@index([sessionId])
 }

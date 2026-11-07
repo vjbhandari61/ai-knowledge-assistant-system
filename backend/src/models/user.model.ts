@@ -8,9 +8,10 @@ export async function findUserById(id: number) {
     return await db.orm.public.User.where({ id }).first();
 }
 
-export async function createUser(email: string, name?: string) {
-    return await db.orm.public.User.select("id", "name", "email").create({
+export async function createUser(email: string,  passwordHash: string, name?: string) {
+    return await db.orm.public.User.select("id", "name", "email", "createdAt").create({
         email,
+        passwordHash,
         name: name ?? null
     });
 }
