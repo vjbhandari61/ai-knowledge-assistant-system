@@ -1,7 +1,8 @@
 import { ai } from "../config/gemini";
-import { GENERATION_MODEL } from "../config/env";
+import { GENERATION_MODEL, SUMMARY_BATCH_TOKEN_LIMIT } from "../config/env";
 import { searchDocument } from "./semantic-search.service";
 import * as DocumentModel from "../models/document.model";
+import { countTokens } from "./gemini-token.service";
 
 export async function askDocument(
     documentId: number,
@@ -92,4 +93,37 @@ export async function summarizeDocument(documentId: number) {
     }
 
     return { summary };
+}
+
+async function createSummaryBatches(
+    chunks: Awaited<ReturnType<typeof DocumentModel.findDocumentChunks>>
+) {
+    const batches: typeof chunks[] = [];
+    let currentBatch: typeof chunks = [];
+    let currentTokenCount = 0;
+
+    for(const chunk of chunks) {
+        const chunkTokens = await countTokens(
+            `[Page ${chunk.pageNumber}] ${chunk.content}`,
+            GENERATION_MODEL
+        );
+
+        if(
+            currentBatch.length > 0 &&
+            currentTokenCount + chunkTokens > SUMMARY_BATCH_TOKEN_LIMIT
+        ) {
+            batches.push(currentBatch);
+            currentBatch = [];
+            currentTokenCount = 0;
+        }
+
+        currentBatch.push(chunk);
+        currentTokenCount += chunkTokens;
+    }
+
+    if(currentBatch.length > 0) {
+        batches.push(currentBatch);
+    }
+
+    return batches;
 }

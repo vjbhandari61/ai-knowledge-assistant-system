@@ -34,6 +34,10 @@ if(!process.env.JWT_SECRET|| Buffer.from(process.env.JWT_SECRET, "base64").lengt
     throw new Error("JWT_SECRET must contain at least 32 random bytes");
 }
 
+if(!process.env.SUMMARY_BATCH_TOKEN_LIMIT) {
+    throw new Error("SUMMARY_BATCH_TOKEN_LIMIT is not configured");
+}
+
 export const PORT = Number(process.env.PORT) || 3000;
 export const DATABASE_URL = process.env.DATABASE_URL;
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -44,3 +48,4 @@ export const REDIS_HOST = process.env.REDIS_HOST;
 export const REDIS_PORT = Number(process.env.REDIS_PORT);
 export const GENERATION_MODEL = process.env.GENERATION_MODEL;
 export const JWT_SECRET = process.env.JWT_SECRET;
+export const SUMMARY_BATCH_TOKEN_LIMIT = Number(process.env.SUMMARY_BATCH_TOKEN_LIMIT);

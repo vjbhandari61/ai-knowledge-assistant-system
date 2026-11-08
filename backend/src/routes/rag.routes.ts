@@ -5,5 +5,6 @@ import { authenticate } from "../middleware/auth.middleware";
 const router = Router();
 
 router.post("/:documentId/ask", authenticate, RagController.askQuestion);
+router.post("/:documentId/summarize", authenticate, RagController.summarizeDocument);
 
 export default router;

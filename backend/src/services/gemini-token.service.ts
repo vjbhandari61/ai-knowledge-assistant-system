@@ -1,7 +1,7 @@
 import { ai } from "../config/gemini";
 import { EMBEDDING_MODEL } from "../config/env";
 
-export async function countTokens(text: string): Promise<number> {
+export async function countTokens(text: string, model: string = EMBEDDING_MODEL): Promise<number> {
     const response = await ai.models.countTokens({
         model: EMBEDDING_MODEL,
         contents: text
@@ -24,7 +24,7 @@ export async function generateEmbedding(
 
     const values = response.embeddings?.[0]?.values;
 
-    if(!values || values.length !== 768) {
+    if (!values || values.length !== 768) {
         throw new Error("Invalid embedding response");
     }
 
