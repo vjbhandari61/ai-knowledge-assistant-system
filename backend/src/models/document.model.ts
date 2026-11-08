@@ -43,5 +43,9 @@ export async function findDocumentsByUserId(userId: number) {
 }
 
 export async function findDocumentByIdAndUserId(documentId: number, userId: number) {
-    return await db.orm.public.Document.where({id: documentId, userId}).first();
+    return await db.orm.public.Document.where({ id: documentId, userId }).first();
+}
+
+export async function findDocumentChunks(documentId: number) {
+    return await db.orm.public.DocumentChunk.where({documentId}).orderBy((f) => f.chunkIndex.asc()).all();
 }
