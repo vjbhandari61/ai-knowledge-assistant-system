@@ -168,9 +168,7 @@ An answer has the shape:
 
 ## Design decisions and evidence
 
-These are implementation-backed rationales, not assumptions about unimplemented features.
-
-| Decision | Why this fits the problem | Evidence in this repository |
+| Decision | Why this fixes our problems | What happens in the repository |
 | --- | --- | --- |
 | Asynchronous PDF ingestion with BullMQ + Redis | Extraction and one embedding call per chunk can take substantially longer than an HTTP request. Queuing returns an upload response promptly and isolates retryable work. | Jobs have 3 attempts with exponential backoff; the worker has concurrency `2`. See `src/queues/pdf-processing.queue.ts` and `src/workers/pdf-processing.worker.ts`. |
 | PostgreSQL plus pgvector | Document metadata, ownership, chunks, and embeddings share one transactional relational store. The query filters on `documentId` and ranks embeddings by cosine similarity without a separate vector database. | `DocumentChunk.embedding` is `pgvector.Vector(768)` in `src/prisma/contract.prisma`; `semantic-search.service.ts` uses cosine similarity. |
@@ -188,19 +186,8 @@ These are implementation-backed rationales, not assumptions about unimplemented 
 
 Normal document states written by the application are `PENDING`, `QUEUED`, `EXTRACTING`, `CHUNKING`, `COMPLETED`, and—in the event that queueing itself fails—`FAILED`.
 
-## Operational notes and current boundaries
-
-- Uploads are local files under `uploads/`, which is deliberately not tracked. They need durable/shared storage if API and workers run on different machines or containers.
-- The worker retries failed jobs, but its failure handler only logs the error; it does **not** currently update a document to `FAILED` after processing failure. Consumers should treat a long-lived non-`COMPLETED` status as requiring operational investigation.
-- The API accepts a PDF based on the request MIME type and limits it to 10 MiB. It does not currently expose deletion, antivirus scanning, rate limiting, refresh tokens, or an HTTP endpoint for job progress.
-- `GET /db` exposes database connectivity without authentication. Restrict or remove it before exposing the service publicly.
-- `cors()` is configured with defaults, so deployers should set an explicit origin policy for a production client.
-- Generated summaries and answers depend on the configured Gemini models and API availability; source citations are retrieved chunks, not independently verified claims.
-
 ## Development
 
 ```bash
 npm run build
 ```
-
-The TypeScript compilation currently succeeds with this command. The repository includes a few ad hoc root-level test scripts (`test-rag.ts`, `test-embedding.ts`, and `test-gemini-embedder.ts`), but no automated test runner or CI test command is configured.
